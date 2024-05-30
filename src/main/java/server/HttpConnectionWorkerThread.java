@@ -37,10 +37,6 @@ public class HttpConnectionWorkerThread extends Thread {
             inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
 
-            String html = "<html><head><title>Theatre HTTP Server</title></head><body> Welcome to HTTP Server </body></html>";
-
-            final String CRLF = "\n\r";
-
             HttpRequest request = null;
 
             try{
@@ -50,13 +46,7 @@ public class HttpConnectionWorkerThread extends Thread {
                 LOGGER.error("Error While Parsing The Request");
             }
 
-//            String response =
-//                    "HTTP/1.1 200 OK" + CRLF + // STATUS LINE
-//                            "Content-length: " + html.getBytes().length + //HEADER
-//                            CRLF + CRLF +
-//                            html +
-//                            CRLF + CRLF;
-            String response = ResponseUtil.responseJSON(RESPONSE_TEMPLATE, html);
+            String response = ResponseUtil.responseJSON(RESPONSE_TEMPLATE, "THIS IS THEATRE SERVER");
 
             outputStream.write(response.getBytes());
 

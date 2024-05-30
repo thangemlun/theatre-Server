@@ -1,4 +1,4 @@
-package constants;
+package Enum;
 
 public enum ContentType {
     APPLICATION_JSON("application/json"),

@@ -1,6 +1,6 @@
 package utils;
 
-import constants.ContentType;
+import Enum.ContentType;
 
 import java.util.Date;
 
