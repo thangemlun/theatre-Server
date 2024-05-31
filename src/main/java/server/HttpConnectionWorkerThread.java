@@ -1,17 +1,21 @@
 package server;
 
+import constants.ClientConstants;
+import data.DataService;
 import exceptions.HttpParsingException;
 import http.HttpParser;
 import http.HttpRequest;
+import model.ShowTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileUtil;
+import utils.Json;
 import utils.ResponseUtil;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 
 public class HttpConnectionWorkerThread extends Thread {
     private final Logger LOGGER = LoggerFactory.getLogger(HttpConnectionWorkerThread.class);
@@ -32,10 +36,9 @@ public class HttpConnectionWorkerThread extends Thread {
     public void run() {
         InputStream inputStream = null;
         OutputStream outputStream = null;
-
         try {
             inputStream = socket.getInputStream();
-            outputStream = socket.getOutputStream();
+            outputStream = new BufferedOutputStream(socket.getOutputStream());
 
             HttpRequest request = null;
 
@@ -46,13 +49,19 @@ public class HttpConnectionWorkerThread extends Thread {
                 LOGGER.error("Error While Parsing The Request");
             }
 
-            String response = ResponseUtil.responseJSON(RESPONSE_TEMPLATE, "THIS IS THEATRE SERVER");
+            String data = Json.stringifyPretty(Json.toJson(
+                            DataService.clientCall(
+                                    ClientConstants.API.concat(ClientConstants.SHOWTIMES), LinkedHashMap.class)));
 
-            outputStream.write(response.getBytes());
+            String response = ResponseUtil.responseJSON(RESPONSE_TEMPLATE, data);
+
+            LOGGER.info("JSON Output Length: {}", data.length());
+
+            outputStream.write(response.getBytes(StandardCharsets.UTF_8), 0, response.getBytes().length);
 
         } catch (IOException e) {
             LOGGER.error("Error while having communication.", e);
-        } finally {
+        }  finally {
             if (inputStream != null) {
                 try {
                     inputStream.close();
@@ -61,8 +70,10 @@ public class HttpConnectionWorkerThread extends Thread {
 
             if (outputStream != null) {
                 try {
+                    outputStream.flush();
                     outputStream.close();
-                } catch (IOException e) {}
+                } catch (IOException e) {
+                }
             }
 
             if (socket != null) {
