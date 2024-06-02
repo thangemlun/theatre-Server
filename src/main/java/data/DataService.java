@@ -1,6 +1,7 @@
 package data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import constants.ClientConstants;
 import model.Cinema;
@@ -17,6 +18,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public class DataService {
@@ -37,8 +39,17 @@ public class DataService {
 
     public static String getAllCinemas() throws JsonProcessingException {
         String endpoint = ClientConstants.API.concat("cinemas");
-        String data = Json.stringifyPretty(Json.toJson(
-                DataService.clientCall(endpoint, Cinema.class)));
+        List dataList = DataService.clientCall(endpoint, ArrayList.class);
+        List<Cinema> cinemas = Json.defaultObjectMapper().convertValue(dataList, new TypeReference<List<Cinema>>() { });
+
+        cinemas.forEach(cinema -> {
+            if (Objects.nonNull(cinema.getImage())) {
+                cinema.setImage(ClientConstants.HOST.concat(cinema.getImage()));
+            }
+
+        });
+
+        String data = Json.stringifyPretty(Json.toJson(cinemas));
         return data;
     }
 

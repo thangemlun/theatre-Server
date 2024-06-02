@@ -37,23 +37,24 @@ public class HttpConnectionWorkerThread extends Thread {
 
     private Socket socket;
 
-    private final Map<String, Function<Object, String>> serviceMap = Stream.of(
-                    new AbstractMap.SimpleEntry<String, Function<Object, String>>(GET_ALL_CINEMAS, t -> {
-                        try {
-                            DataService.getAllCinemas();
-                        } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
-                        }
-                        return null;
-                    }),
-                    new AbstractMap.SimpleEntry<String, Function<Object, String>>(SHOWTIMES_BY_CINEMA, t -> {
-                        try {
-                            DataService.getShowTimesByCinemaSlug((String) t);
-                        } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
-                        }
-                        return null;
-                    }))
+    private final Map<String, Function<Map<String, Object>, Object>> serviceMap = Stream.of(
+                    new AbstractMap.SimpleEntry<String, Function<Map<String, Object>, Object>>(GET_ALL_CINEMAS,
+                            t -> {
+                                try {
+                                    return DataService.getAllCinemas();
+                                } catch (JsonProcessingException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }),
+                    new AbstractMap.SimpleEntry<String, Function<Map<String, Object>, Object>>(SHOWTIMES_BY_CINEMA,
+                            t -> {
+                                try {
+                                    String slug = (String) t.get("slug");
+                                    return DataService.getShowTimesByCinemaSlug(slug);
+                                } catch (JsonProcessingException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }))
             .collect(Collectors.toMap(map -> map.getKey(), map1 -> map1.getValue()));
     public HttpConnectionWorkerThread(Socket socket) throws JsonProcessingException {
         this.socket = socket;
@@ -114,6 +115,6 @@ public class HttpConnectionWorkerThread extends Thread {
 
     private String processRequestAndGetData(HttpRequest request) {
         Objects.requireNonNull(request);
-        return null;
+        return (String) serviceMap.get(request.getRequestTarget().getPath()).apply(request.getRequestTarget().getParams());
     }
 }

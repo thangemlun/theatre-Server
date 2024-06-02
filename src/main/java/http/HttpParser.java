@@ -1,9 +1,7 @@
 package http;
 
-import com.sun.xml.internal.ws.util.StringUtils;
 import exceptions.BadHttpVersionException;
 import exceptions.HttpParsingException;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +10,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class HttpParser {
     private final static Logger LOGGER = LoggerFactory.getLogger(HttpParser.class);
@@ -97,33 +97,33 @@ public class HttpParser {
 
     private HttpRequestTarget parseRequestTarget(String requestTarget) {
         HttpRequestTarget target = new HttpRequestTarget();
-        String path = "";
-        Map<String, Object> params = new HashMap<>();
-        getPathAndParams(requestTarget, path, params);
-        target.setPath(path);
-        target.setParams(params);
+        getPathAndParams(requestTarget, target);
         return target;
     }
 
-    private void getPathAndParams(String requestTarget, String path, Map<String, Object> params) {
-        StringBuilder builder = new StringBuilder("");
-        int index = -1;
-        while ((index ++) < requestTarget.length()) {
-            if (requestTarget.charAt(index) == '?') {
-                path = builder.toString();
-                builder.delete(0, builder.length());
-                continue;
+    private void getPathAndParams(String requestTarget, HttpRequestTarget request) {
+        String path = "";
+        String paramString = "";
+        int paramIndex = 0;
+        while (paramIndex < requestTarget.length()) {
+            if (requestTarget.charAt(paramIndex) == '?') {
+                break;
             }
-            builder.append(requestTarget.charAt(index));
+            paramIndex ++;
         }
+        path = requestTarget.substring(0, paramIndex);
+        paramString = requestTarget.substring(paramIndex, requestTarget.length());
 
         // start get params
-        List<String> paramList = Arrays.asList(builder.toString().split("&"));
+        Map<String, Object> mapParams = new HashMap<>();
+        List<String> paramList = Arrays.asList(paramString.toString().split("&"));
         for (String param : paramList) {
             List<String> item = Arrays.asList(param.split("="));
             if (!item.isEmpty() && item.size() > 1 &&  ObjectUtils.allNotNull(item.get(0), item.get(1))) {
-                params.put(item.get(0), item.get(1));
+                mapParams.put(item.get(0), item.get(1));
             }
         }
+        request.setPath(path);
+        request.setParams(mapParams);
     }
 }

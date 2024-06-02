@@ -8,7 +8,7 @@ public class Json {
 
     public Json() {}
 
-    private static ObjectMapper defaultObjectMapper() {
+    public static ObjectMapper defaultObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return objectMapper;
