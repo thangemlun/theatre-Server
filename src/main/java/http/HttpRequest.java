@@ -5,7 +5,7 @@ import exceptions.HttpParsingException;
 
 public class HttpRequest extends HttpMessage{
     private HttpMethod method;
-    private String requestTarget;
+    private HttpRequestTarget requestTarget;
     private String originalHttpVersion;
     private HttpVersion bestCompatibleHttpVersion;
 
@@ -30,12 +30,12 @@ public class HttpRequest extends HttpMessage{
         );
     }
 
-    public String getRequestTarget() {
+    public HttpRequestTarget getRequestTarget() {
         return requestTarget;
     }
 
-    public void setRequestTarget(String requestTarget) throws HttpParsingException {
-        if (requestTarget == null || requestTarget.length() == 0) {
+    public void setRequestTarget(HttpRequestTarget requestTarget) throws HttpParsingException {
+        if (requestTarget.getPath() == null || requestTarget.getPath().length() == 0) {
             throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_500_INTERNAL_SERVER_ERROR);
         }
         this.requestTarget = requestTarget;
