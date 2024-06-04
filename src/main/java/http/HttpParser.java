@@ -105,14 +105,18 @@ public class HttpParser {
         String path = "";
         String paramString = "";
         int paramIndex = 0;
+        boolean hasParam = false;
         while (paramIndex < requestTarget.length()) {
             if (requestTarget.charAt(paramIndex) == '?') {
+                hasParam = true;
                 break;
             }
             paramIndex ++;
         }
         path = requestTarget.substring(0, paramIndex);
-        paramString = requestTarget.substring(paramIndex, requestTarget.length());
+        if (hasParam) {
+            paramString = requestTarget.substring(paramIndex + 1, requestTarget.length());
+        }
 
         // start get params
         Map<String, Object> mapParams = new HashMap<>();

@@ -33,13 +33,12 @@ public class HttpConnectionWorkerThread extends Thread {
 
     private final HttpParser parser;
 
-    private final String RESPONSE_TEMPLATE;
-
     private Socket socket;
 
     private final Map<String, Function<Map<String, Object>, Object>> serviceMap = Stream.of(
                     new AbstractMap.SimpleEntry<String, Function<Map<String, Object>, Object>>(GET_ALL_CINEMAS,
                             t -> {
+
                                 try {
                                     return DataService.getAllCinemas();
                                 } catch (JsonProcessingException e) {
@@ -59,7 +58,6 @@ public class HttpConnectionWorkerThread extends Thread {
     public HttpConnectionWorkerThread(Socket socket) throws JsonProcessingException {
         this.socket = socket;
         this.parser = new HttpParser();
-        RESPONSE_TEMPLATE = FileUtil.readStringFromFile("src/main/resources/response-template");
     }
 
     @Override
@@ -81,14 +79,21 @@ public class HttpConnectionWorkerThread extends Thread {
 
             String data = processRequestAndGetData(request);
 
-            String response = ResponseUtil.responseJSON(RESPONSE_TEMPLATE, data);
+            String response = ResponseUtil.responseJSON(data);
 
             LOGGER.info("JSON Output Length: {}", data.length());
 
             outputStream.write(response.getBytes(StandardCharsets.UTF_8), 0, response.getBytes().length);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("Error while having communication.", e);
+            try {
+                outputStream = new BufferedOutputStream(socket.getOutputStream());
+                String internalResponse = ResponseUtil.responseInternalServer();
+                outputStream.write(internalResponse.getBytes(StandardCharsets.UTF_8), 0,
+                        internalResponse.getBytes().length);
+            } catch (IOException ex) {}
+
         }  finally {
             if (inputStream != null) {
                 try {

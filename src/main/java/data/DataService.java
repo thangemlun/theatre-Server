@@ -38,7 +38,7 @@ public class DataService {
     }
 
     public static String getAllCinemas() throws JsonProcessingException {
-        String endpoint = ClientConstants.API.concat("cinemas");
+        String endpoint = ClientConstants.API.concat("/cinemas");
         List dataList = DataService.clientCall(endpoint, ArrayList.class);
         List<Cinema> cinemas = Json.defaultObjectMapper().convertValue(dataList, new TypeReference<List<Cinema>>() { });
 
@@ -61,7 +61,15 @@ public class DataService {
         dataMap.forEach((e, v) -> {
             ScheduleShowTimes item = new ScheduleShowTimes();
             item.setDate(e);
-            item.setShowTimes(v);
+            item.setShowTimes(Json.defaultObjectMapper().convertValue(v, new TypeReference<List<ShowTime>>() { }));
+
+            item.getShowTimes().forEach(showTime -> {
+                String src = showTime.getPoster();
+                if (Objects.nonNull(src)) {
+                    showTime.setPoster(ClientConstants.HOST.concat(src));
+                }
+            });
+
             scheduleShowTimes.add(item);
         });
         String data = Json.stringifyPretty(Json.toJson(scheduleShowTimes));
