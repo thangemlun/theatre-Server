@@ -1,33 +1,47 @@
 package server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class TheatreServer {
-    private ServerSocket serverSocket;
-    private Socket clientSocket;
-    private PrintWriter out;
-    private BufferedReader in;
+public class TheatreServer extends Thread {
+    private final static Logger LOGGER = LoggerFactory.getLogger(ServerListenerThread.class);
+    private int port;
+    private final ServerSocket serverSocket;
 
-    public void start(int port) throws IOException {
-        serverSocket = new ServerSocket(port);
-        clientSocket = serverSocket.accept();
-        out = new PrintWriter(clientSocket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        String greeting = in.readLine();
-        if ("hello server".equals(greeting)) {
-            out.println("hello client");
-        }
-        else {
-            out.println("unrecognised greeting");
+    public TheatreServer(int port) {
+        this.port = port;
+        try {
+            this.serverSocket = new ServerSocket(port);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while initializing socket from server. ", e);
         }
     }
 
-    public void stop() throws IOException {
-        in.close();
-        out.close();
-        clientSocket.close();
-        serverSocket.close();
+    @Override
+    public void run() {
+        try {
+            while (serverSocket.isBound() && !serverSocket.isClosed()) {
+                Socket socket = serverSocket.accept();
+                LOGGER.info("Connection accepted: {}", socket.getInetAddress());
+                TheatreClient workerThread = new TheatreClient(socket);
+                workerThread.start();
+            }
+            //serverSocket.close();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (serverSocket != null) {
+                try {
+                    serverSocket.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 }

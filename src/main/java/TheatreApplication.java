@@ -3,6 +3,7 @@ import config.ConfigurationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.ServerListenerThread;
+import server.TheatreServer;
 
 public class TheatreApplication {
     private final static Logger LOGGER = LoggerFactory.getLogger(TheatreApplication.class);
@@ -13,8 +14,8 @@ public class TheatreApplication {
         Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
         printOut(String.format("Using port: %s", conf.getPort()));
 
-        ServerListenerThread serverListenerThread = new ServerListenerThread(conf.getPort());
-        serverListenerThread.start();
+        TheatreServer serverListener = new TheatreServer(conf.getPort());
+        serverListener.start();
     }
 
     static void printOut(String a) {
