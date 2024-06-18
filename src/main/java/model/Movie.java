@@ -25,5 +25,6 @@ public class Movie {
     private String release;
     private String year;
     private Date releaseDate;
+    private String trailer;
 }
 

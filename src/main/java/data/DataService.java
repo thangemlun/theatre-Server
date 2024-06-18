@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import constants.ClientConstants;
 import constants.FormatConstants;
 import constants.ServerConstants;
-import model.Cinema;
-import model.Movie;
-import model.ScheduleShowTimes;
-import model.ShowTime;
+import model.*;
 import utils.Json;
 
 import java.io.BufferedReader;
@@ -32,7 +29,7 @@ public class DataService {
             JsonNode node = Json.parse(parseStreamToString(connection.getInputStream()));
             data = Json.fromJson(node, clazz);
         }catch (Exception e) {
-
+            e.printStackTrace();
         }
 
         return data;
@@ -75,6 +72,10 @@ public class DataService {
                     System.out.println("Error parsing date "+ e.getMessage());
                 }
             }
+
+            if (Objects.nonNull(movie.getTrailer())) {
+                movie.setTrailer(movie.getTrailer().replace("//",""));
+            }
         });
 
         if (newest) {
@@ -87,6 +88,31 @@ public class DataService {
 
         String data = Json.stringifyPretty(Json.toJson(movies));
         return data;
+    }
+
+    public static String getAllChannels() throws JsonProcessingException {
+        String endpoint = ClientConstants.FPT_HOST.concat(ClientConstants.GET_ALL_CHANNELS);
+        Map dataMap = DataService.clientCall(endpoint, LinkedHashMap.class);
+        List<Channel> channels = Json.defaultObjectMapper().convertValue(dataMap.get("Channels"), new TypeReference<List<Channel>>() { });
+
+        String data = Json.stringifyPretty(Json.toJson(channels));
+        return data;
+    }
+
+    public static String getScheduleOfChannelById(String id) throws JsonProcessingException {
+        String endpoint = ClientConstants.FPT_HOST.concat(ClientConstants.GET_FPT_SCHEDULE_BY_CHANNEL_ID);
+        endpoint = endpoint.concat(id).concat(ClientConstants.FPT_TOKEN).concat("&page=1&day=").concat(getTodayString());
+        Map<String, LinkedHashMap<String, Object>> dataMap = DataService.clientCall(endpoint, LinkedHashMap.class);
+
+        List<Schedule> schedules = Json.defaultObjectMapper().convertValue(dataMap.get("data").get("schedule_list"), new TypeReference<List<Schedule>>() { });
+
+        String data = Json.stringifyPretty(Json.toJson(schedules));
+        return data;
+    }
+
+    private static String getTodayString() {
+        SimpleDateFormat format = new SimpleDateFormat(FormatConstants.FORMAT_DATE_PARAM);
+        return format.format(new Date());
     }
 
     public static String getShowTimesByCinemaSlug(String slug) throws JsonProcessingException {

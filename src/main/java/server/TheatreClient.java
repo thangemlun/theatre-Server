@@ -1,7 +1,6 @@
 package server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import constants.ServerConstants;
 import data.DataService;
 import data.TheatreService;
 import exceptions.HttpParsingException;
@@ -66,7 +65,25 @@ public class TheatreClient extends Thread {
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
                                 }
-                            }))
+                            }),
+                    new AbstractMap.SimpleEntry<String, Function<Map<String, Object>, Object>>(GET_TV_SHOW_CHANNELS,
+                            t -> {
+                                try {
+                                    return DataService.getAllChannels();
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }),
+                    new AbstractMap.SimpleEntry<String, Function<Map<String, Object>, Object>>(GET_SCHEDULE_BY_CHANNEL_ID,
+                            t -> {
+                                try {
+                                    String id = (String)t.get("_id");
+                                    return DataService.getScheduleOfChannelById(id);
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            })
+                    )
             .collect(Collectors.toMap(map -> map.getKey(), map1 -> map1.getValue()));
     public TheatreClient(Socket socket) throws JsonProcessingException {
         this.socket = socket;
