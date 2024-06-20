@@ -35,12 +35,10 @@ public class TheatreServer extends Thread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if (serverSocket != null) {
-                try {
-                    serverSocket.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }

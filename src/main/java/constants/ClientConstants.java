@@ -27,10 +27,15 @@ public class ClientConstants {
 
     public static String GET_ALL_MOVIES = "/get-all-movies";
 
-    public static String GET_TRENDING_MOVIES = "/get-trending-movies";
+    public static String GET_UP_COMING_MOVIES = "/get-up-coming-movies";
+
+    public static String GET_ON_SCREEN_MOVIES = "/get-on-screen-movies";
 
     public static String GET_TV_SHOW_CHANNELS = "/get-all-channels";
 
     public static String GET_SCHEDULE_BY_CHANNEL_ID = "/get-schedule-by-id";
 
+    public static String MOMO_ENDPOINT = "https://momo.vn/_next/data/puvVc4VOjm0O8LdDRKU-l/cinema.json";
+
+    public static String MOMO_MOVIE_SHOWTIMES = "https://webmomoapi.momo.vn/api/ci-film/session/9600?t=1718913720845&sortType=1&sortDir=1&apiCityId=50&date=2024-06-21";
 }

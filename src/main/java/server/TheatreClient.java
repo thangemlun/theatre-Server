@@ -58,10 +58,18 @@ public class TheatreClient extends Thread {
                                     throw new RuntimeException(e);
                                 }
                             }),
-                    new AbstractMap.SimpleEntry<String, Function<Map<String, Object>, Object>>(GET_TRENDING_MOVIES,
+                    new AbstractMap.SimpleEntry<String, Function<Map<String, Object>, Object>>(GET_UP_COMING_MOVIES,
                             t -> {
                                 try {
-                                    return theatreService.getTrendingMovies();
+                                    return theatreService.getUpComingMovies();
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }),
+                    new AbstractMap.SimpleEntry<String, Function<Map<String, Object>, Object>>(GET_ON_SCREEN_MOVIES,
+                            t -> {
+                                try {
+                                    return theatreService.getOnScreenMovies();
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
                                 }

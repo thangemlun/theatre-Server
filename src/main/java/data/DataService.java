@@ -3,15 +3,18 @@ package data;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import config.HttpsTrustManager;
 import constants.ClientConstants;
 import constants.FormatConstants;
 import constants.ServerConstants;
 import model.*;
 import utils.Json;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
@@ -25,7 +28,8 @@ public class DataService {
         T data = null;
         try {
             URL url = new URL(api);
-            URLConnection connection = url.openConnection();
+            HttpsTrustManager.allowAllSSL();
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             JsonNode node = Json.parse(parseStreamToString(connection.getInputStream()));
             data = Json.fromJson(node, clazz);
         }catch (Exception e) {

@@ -1,28 +1,26 @@
 package data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import constants.ServerConstants;
-import model.Movie;
+import model.MasterData;
+import server.TheatreClient;
 import utils.Json;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class TheatreService {
     private static TheatreService instance;
 
-    public static TheatreService getInstance (){
+    public static TheatreService getInstance(){
         if (instance == null) {
             instance = new TheatreService();
         }
         return instance;
     }
 
-    public String getTrendingMovies() throws JsonProcessingException {
-        return DataService.getAllMovies(true);
+    public String getUpComingMovies() throws JsonProcessingException {
+        return Json.stringifyPretty(Json.toJson(MasterData.getInstance().getDataMoviesSoon()));
+    }
+
+    public String getOnScreenMovies() throws JsonProcessingException {
+        return Json.stringifyPretty(Json.toJson(MasterData.getInstance().getDataMoviesNow()));
     }
 
 }
