@@ -142,6 +142,12 @@ public class DataService {
         return data;
     }
 
+    public static LinkedHashMap getShowTimesByMovie(String param) throws JsonProcessingException {
+        String endpoint = ClientConstants.MOMO_MOVIE_SHOWTIMES.concat(param);
+        LinkedHashMap dataMap = DataService.clientCall(endpoint, LinkedHashMap.class);
+        return dataMap;
+    }
+
 
 
     static String parseStreamToString(InputStream stream) {

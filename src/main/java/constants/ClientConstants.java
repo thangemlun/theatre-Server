@@ -33,9 +33,13 @@ public class ClientConstants {
 
     public static String GET_TV_SHOW_CHANNELS = "/get-all-channels";
 
+    public static String GET_ALL_CITIES = "/get-all-cities";
+
     public static String GET_SCHEDULE_BY_CHANNEL_ID = "/get-schedule-by-id";
 
-    public static String MOMO_ENDPOINT = "https://momo.vn/_next/data/puvVc4VOjm0O8LdDRKU-l/cinema.json";
+    public static String GET_SCHEDULE_BY_MOVIE = "/get-schedule-by-movie";
 
-    public static String MOMO_MOVIE_SHOWTIMES = "https://webmomoapi.momo.vn/api/ci-film/session/9600?t=1718913720845&sortType=1&sortDir=1&apiCityId=50&date=2024-06-21";
+    public static String MOMO_ENDPOINT = "https://momo.vn/_next/data/FgolM-VVRuj6aPybcDQER/cinema.json";
+
+    public static String MOMO_MOVIE_SHOWTIMES = "https://webmomoapi.momo.vn/api/ci-film/session/";
 }

@@ -4,6 +4,7 @@ import model.MasterData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.ServerListenerThread;
+import server.TheatreAutoUpdateScheduler;
 import server.TheatreServer;
 
 public class TheatreApplication {
@@ -22,7 +23,9 @@ public class TheatreApplication {
             throw new RuntimeException("Fetch data failed : " + e.getMessage());
         }
         TheatreServer serverListener = new TheatreServer(conf.getPort());
+        TheatreAutoUpdateScheduler scheduler = new TheatreAutoUpdateScheduler();
         serverListener.start();
+        scheduler.start();
     }
 
     static void printOut(String a) {

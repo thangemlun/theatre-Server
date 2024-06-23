@@ -82,6 +82,25 @@ public class TheatreClient extends Thread {
                                     throw new RuntimeException(e);
                                 }
                             }),
+                    new AbstractMap.SimpleEntry<String, Function<Map<String, Object>, Object>>(GET_SCHEDULE_BY_MOVIE,
+                            t -> {
+                                try {
+                                    String apiFilmId = (String) t.get("apiFilmId");
+                                    String time = (String) t.get("time");
+                                    String cityId = (String) t.get("cityId");
+                                    return theatreService.getScheduleForMovie(apiFilmId, time, cityId);
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }),
+                    new AbstractMap.SimpleEntry<String, Function<Map<String, Object>, Object>>(GET_ALL_CITIES,
+                            t -> {
+                                try {
+                                    return theatreService.getCities();
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }),
                     new AbstractMap.SimpleEntry<String, Function<Map<String, Object>, Object>>(GET_SCHEDULE_BY_CHANNEL_ID,
                             t -> {
                                 try {
@@ -137,6 +156,7 @@ public class TheatreClient extends Thread {
                 String internalResponse = ResponseUtil.responseInternalServer();
                 outputStream.write(internalResponse.getBytes(StandardCharsets.UTF_8), 0,
                         internalResponse.getBytes().length);
+                outputStream.flush();
             } catch (IOException ex) {}
 
         } finally {
