@@ -183,6 +183,17 @@ public class TheatreClient extends Thread {
         LOGGER.info("Connection finished.");
     }
 
+    private void readInputStream(InputStream inputStream) {
+        try {
+            int _byte;
+            while ((_byte = inputStream.read()) >= 0) {
+                System.out.print((char) _byte);
+            }
+            return;
+        } catch (Exception e) {
+        }
+    }
+
     private String processRequestAndGetData(HttpRequest request) {
         Objects.requireNonNull(request);
         return (String) serviceMap.get(request.getRequestTarget().getPath()).apply(request.getRequestTarget().getParams());

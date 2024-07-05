@@ -26,7 +26,6 @@ public class TheatreServer extends Thread {
         try {
             while (serverSocket.isBound() && !serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
-                LOGGER.info("Connection accepted: {}", socket.getInetAddress());
                 TheatreClient workerThread = new TheatreClient(socket);
                 workerThread.start();
             }

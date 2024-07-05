@@ -1,5 +1,6 @@
 import config.Configuration;
 import config.ConfigurationManager;
+import config.MomoConfiguration;
 import model.MasterData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,8 @@ public class TheatreApplication {
         printOut("Server starting...");
         ConfigurationManager.getInstance().loadMyConfigurationFile("src/main/resources/server-config.json");
         Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
+        // load momo token instance
+        MomoConfiguration.getInstance().loadMOMOToken();
         printOut(String.format("Using port: %s", conf.getPort()));
 
         try {

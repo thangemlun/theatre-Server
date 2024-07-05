@@ -37,6 +37,21 @@ public class CinemaMM {
         return item;
     }
 
+    public static CinemaMM fromMapZL(LinkedHashMap<String, Object> map) {
+        CinemaMM item = new CinemaMM();
+        item.setName(getOrDefault("name", map));
+        item.setLogo(getOrDefault("logo", map));
+        item.setAddress(getOrDefault("address", map));
+        ArrayList<LinkedHashMap<String, Object>> scheduleMap = (ArrayList<LinkedHashMap<String, Object>>) map.get("sessionGroups");
+        List<ScheduleMM> schedules = new ArrayList<>();
+        for (LinkedHashMap<String, Object> mapItem : scheduleMap) {
+            ArrayList<LinkedHashMap<String, Object>> scheduleDataMap = (ArrayList<LinkedHashMap<String, Object>>) mapItem.get("sessions");
+            schedules.addAll(scheduleDataMap.stream().map(ScheduleMM::fromMapZL).collect(Collectors.toList()));
+        }
+        item.setSchedules(schedules);
+        return item;
+    }
+
 
 
     private static <T> T getOrDefault(String key, LinkedHashMap<String, Object> map){

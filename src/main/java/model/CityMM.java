@@ -12,7 +12,7 @@ public class CityMM {
 
     public static CityMM fromMap(LinkedHashMap<String, Object> map) {
         CityMM result = new CityMM();
-        result.setApiId(getOrDefault("ApiId", map));
+        result.setApiId(getOrDefault("DisplayOrder", map));
         result.setCode(getOrDefault("Code", map));
         result.setName(getOrDefault("Name", map));
         return result;

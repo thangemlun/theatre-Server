@@ -34,17 +34,21 @@ public class MasterData {
     public static void fetchData() {
         MasterData instance = MasterData.getInstance();
         String endPoint = ClientConstants.MOMO_ENDPOINT;
+        String zaloEndpoint = ClientConstants.ZALO_SCREENING_ENDPOINT;
         Map<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> momoMasterData =
-                DataService.clientCall(endPoint, LinkedHashMap.class);
+                DataService.clientCall(endPoint, LinkedHashMap.class, false);
+
+        Map<String, Object> zaloScreeningData = DataService.clientCall(zaloEndpoint,
+                LinkedHashMap.class, false);
 
         LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>> pageProps =
                 momoMasterData.get("pageProps");
 
-        LinkedHashMap<String, LinkedHashMap<String, Object>> mapDataMoviesNow = pageProps.get("dataMoviesNow");
+//        LinkedHashMap<String, LinkedHashMap<String, Object>> mapDataMoviesNow = pageProps.get("dataMoviesNow");
         LinkedHashMap<String, LinkedHashMap<String, Object>> mapDataMoviesSoon = pageProps.get("dataMoviesSoon");
         LinkedHashMap<String, LinkedHashMap<String, Object>> mapCinemaMaster = pageProps.get("dataCinemaMaster");
         // set data
-        instance.setMovieNowList((ArrayList<LinkedHashMap<String, Object>>) mapDataMoviesNow.get("Data").get("Items"));
+        instance.setMovieNowList((ArrayList<LinkedHashMap<String, Object>>) zaloScreeningData.get("data"));
         instance.setMovieSoonList((ArrayList<LinkedHashMap<String, Object>>) mapDataMoviesSoon.get("Data").get("Items"));
         instance.setDataCities((ArrayList<LinkedHashMap<String, Object>>) mapCinemaMaster.get("Data").get("Cities"));
         log.info("up coming movies size : {}", instance.dataMoviesSoon.size());
@@ -56,7 +60,8 @@ public class MasterData {
         MasterData instance = MasterData.getInstance();
         List<MovieMM> movies = new ArrayList<>();
         for (LinkedHashMap<String, Object> dataMap : listData) {
-            movies.add(MovieMM.fromMap(dataMap));
+//            movies.add(MovieMM.fromMap(dataMap));
+            movies.add(MovieMM.fromMapZL(dataMap));
         }
         instance.setDataMoviesNow(movies);
     }

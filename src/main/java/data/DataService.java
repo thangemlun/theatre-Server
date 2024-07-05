@@ -4,34 +4,63 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import config.HttpsTrustManager;
+import config.MomoConfiguration;
 import constants.ClientConstants;
 import constants.FormatConstants;
 import constants.ServerConstants;
 import model.*;
 import utils.Json;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class DataService {
-
-    public static <T> T clientCall(String api, Class<T> clazz) {
+    public static <T> T clientCall(String api, Class<T> clazz, boolean isAuthenticated) {
         T data = null;
         try {
             URL url = new URL(api);
             HttpsTrustManager.allowAllSSL();
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+            connection.setRequestProperty("Accept", "*/*");
+            connection.setRequestProperty("Connection", "keep-alive");
+            connection.setRequestProperty("Sec-Ch-Ua-Platform", "\"Windows\"");
+            connection.setRequestProperty("X-Did", "2EC82B90304527FC");
+
             JsonNode node = Json.parse(parseStreamToString(connection.getInputStream()));
             data = Json.fromJson(node, clazz);
+            connection.disconnect();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return data;
+    }
+
+    public static <T> T clientCallForShowTime(String api, Class<T> clazz, boolean isAuthenticated, Date queryTime,
+                                              String token) {
+        T data = null;
+        try {
+            URL url = new URL(api);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+            connection.setRequestProperty("Accept", "*/*");
+//            connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+            connection.setRequestProperty("Connection", "keep-alive");
+            connection.setRequestProperty("Sec-Ch-Ua-Platform", "\"Windows\"");
+
+            JsonNode node = Json.parse(parseStreamToString(connection.getInputStream()));
+            data = Json.fromJson(node, clazz);
+            connection.disconnect();
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,7 +70,7 @@ public class DataService {
 
     public static String getAllCinemas() throws JsonProcessingException {
         String endpoint = ClientConstants.API.concat(ClientConstants.CINEMAS);
-        List dataList = DataService.clientCall(endpoint, ArrayList.class);
+        List dataList = DataService.clientCall(endpoint, ArrayList.class, false);
         List<Cinema> cinemas = Json.defaultObjectMapper().convertValue(dataList, new TypeReference<List<Cinema>>() { });
 
         cinemas.forEach(cinema -> {
@@ -57,7 +86,7 @@ public class DataService {
 
     public static String getAllMovies(boolean newest) throws JsonProcessingException {
         String endpoint = ClientConstants.API.concat(ClientConstants.MOVIES);
-        List dataList = DataService.clientCall(endpoint, ArrayList.class);
+        List dataList = DataService.clientCall(endpoint, ArrayList.class, false);
         List<Movie> movies = Json.defaultObjectMapper().convertValue(dataList, new TypeReference<List<Movie>>() { });
 
         movies.stream()
@@ -96,7 +125,7 @@ public class DataService {
 
     public static String getAllChannels() throws JsonProcessingException {
         String endpoint = ClientConstants.FPT_HOST.concat(ClientConstants.GET_ALL_CHANNELS);
-        Map dataMap = DataService.clientCall(endpoint, LinkedHashMap.class);
+        Map dataMap = DataService.clientCall(endpoint, LinkedHashMap.class, false);
         List<Channel> channels = Json.defaultObjectMapper().convertValue(dataMap.get("Channels"), new TypeReference<List<Channel>>() { });
 
         String data = Json.stringifyPretty(Json.toJson(channels));
@@ -105,8 +134,8 @@ public class DataService {
 
     public static String getScheduleOfChannelById(String id) throws JsonProcessingException {
         String endpoint = ClientConstants.FPT_HOST.concat(ClientConstants.GET_FPT_SCHEDULE_BY_CHANNEL_ID);
-        endpoint = endpoint.concat(id).concat(ClientConstants.FPT_TOKEN).concat("&page=1&day=").concat(getTodayString());
-        Map<String, LinkedHashMap<String, Object>> dataMap = DataService.clientCall(endpoint, LinkedHashMap.class);
+        endpoint = endpoint.concat(id).concat("?st=zibDHOYijv7B_PPQcNBfGQ&e=1719512160").concat("&page=1&day=").concat(getTodayString());
+        Map<String, LinkedHashMap<String, Object>> dataMap = DataService.clientCall(endpoint, LinkedHashMap.class, false);
 
         List<Schedule> schedules = Json.defaultObjectMapper().convertValue(dataMap.get("data").get("schedule_list"), new TypeReference<List<Schedule>>() { });
 
@@ -121,7 +150,7 @@ public class DataService {
 
     public static String getShowTimesByCinemaSlug(String slug) throws JsonProcessingException {
         String endpoint = ClientConstants.API.concat(ClientConstants.SHOWTIMES+slug);
-        LinkedHashMap<String, List<ShowTime>> dataMap = DataService.clientCall(endpoint, LinkedHashMap.class);
+        LinkedHashMap<String, List<ShowTime>> dataMap = DataService.clientCall(endpoint, LinkedHashMap.class, false);
         List<ScheduleShowTimes> scheduleShowTimes = new ArrayList<>();
         // map data to schedule show time
         dataMap.forEach((e, v) -> {
@@ -142,9 +171,11 @@ public class DataService {
         return data;
     }
 
-    public static LinkedHashMap getShowTimesByMovie(String param) throws JsonProcessingException {
-        String endpoint = ClientConstants.MOMO_MOVIE_SHOWTIMES.concat(param);
-        LinkedHashMap dataMap = DataService.clientCall(endpoint, LinkedHashMap.class);
+    public static LinkedHashMap getShowTimesByMovie(String param, Date queryTime) throws JsonProcessingException {
+        String endpoint = ClientConstants.ZALO_MOVIE_SHOWTIMES.concat(param);
+        String clientToken = Base64.getEncoder().encodeToString(param.getBytes(StandardCharsets.UTF_8));
+        LinkedHashMap dataMap = DataService.clientCallForShowTime(endpoint, LinkedHashMap.class, true ,
+                queryTime, clientToken);
         return dataMap;
     }
 

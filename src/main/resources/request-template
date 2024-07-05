@@ -1,0 +1,7 @@
+GET /get-all-cinema HTTP/1.1
+User-Agent: PostmanRuntime/7.37.3
+Accept: */*
+Postman-Token: b9819e43-c5f7-4ec5-9dcd-5a93062048cc
+Host: localhost:8080
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive

@@ -7,9 +7,9 @@ public class ClientConstants {
 
     public static String FPT_HOST = "https://api.fptplay.net/api/v7.1_w";
 
-    public static String GET_ALL_CHANNELS = "/tv?st=y2BEk03cEr0Z8xAW3sNFwA&e=1718741710";
+    public static String GET_ALL_CHANNELS = "/tv?st=7zJNYbKLcbnygTh4D6J5lw&e=1719512157&device=Chrome(version%253A126.0.0.0)&drm=1";
 
-    public static String FPT_TOKEN = "?st=77OqrpgR9nCN6u_uT9OuhQ&e=1718741712";
+    public static String FPT_TOKEN = "?st=aICVwdLcAVNtIQFBgoc1Cg&e=1719511806";
 
     public static String GET_FPT_SCHEDULE_BY_CHANNEL_ID = "/tvschedule/";
 
@@ -39,7 +39,10 @@ public class ClientConstants {
 
     public static String GET_SCHEDULE_BY_MOVIE = "/get-schedule-by-movie";
 
-    public static String MOMO_ENDPOINT = "https://momo.vn/_next/data/FgolM-VVRuj6aPybcDQER/cinema.json";
+    public static String MOMO_ENDPOINT = "https://www.momo.vn/cinema/_next/data/JH0W_OId5P31iBeITCWIE/phim-chieu.json?fromType=nav_menu";
 
+    public static String ZALO_SCREENING_ENDPOINT = "https://zlp-movie-api.zalopay.vn/v2/movie/data/film/showing";
+
+    public static String ZALO_MOVIE_SHOWTIMES = "https://zlp-movie-api.zalopay.vn/v2/movie/data/sessions";
     public static String MOMO_MOVIE_SHOWTIMES = "https://webmomoapi.momo.vn/api/ci-film/session/";
 }

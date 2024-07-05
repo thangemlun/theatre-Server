@@ -18,7 +18,7 @@ public class TheatreAutoUpdateScheduler extends Thread{
     }
 
     private void job() throws InterruptedException {
-        Thread.sleep(60000);
+        Thread.sleep(60000 * 60);
         log.info("Job run at : {}", new Date());
         MasterData.fetchData();
         job();
