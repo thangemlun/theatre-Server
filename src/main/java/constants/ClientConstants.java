@@ -39,10 +39,7 @@ public class ClientConstants {
 
     public static String GET_SCHEDULE_BY_MOVIE = "/get-schedule-by-movie";
 
-    public static String MOMO_ENDPOINT = "https://www.momo.vn/cinema/_next/data/X1K7oV0NERX7vD868_dUr/lich-chieu.json?fromType=nav_menu";
-
     public static String ZALO_SCREENING_ENDPOINT = "https://zlp-movie-api.zalopay.vn/v2/movie/data/film/showing";
 
     public static String ZALO_MOVIE_SHOWTIMES = "https://zlp-movie-api.zalopay.vn/v2/movie/data/sessions";
-    public static String MOMO_MOVIE_SHOWTIMES = "https://webmomoapi.momo.vn/api/ci-film/session/";
 }

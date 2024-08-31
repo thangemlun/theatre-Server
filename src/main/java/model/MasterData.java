@@ -33,7 +33,6 @@ public class MasterData {
 
     public static void fetchData() {
         MasterData instance = MasterData.getInstance();
-        String endPoint = ClientConstants.MOMO_ENDPOINT;
         String zaloEndpoint = ClientConstants.ZALO_SCREENING_ENDPOINT;
 //        Map<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> momoMasterData =
 //                DataService.clientCall(endPoint, LinkedHashMap.class, false);
